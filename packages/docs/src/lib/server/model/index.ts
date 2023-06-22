@@ -4,14 +4,13 @@ import { Encoder, GD, Parser } from '@greendoc/parse';
 import { Project } from 'ts-morph';
 import he from 'he';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT_DELTA = '../../../../../../';
+const ROOT_FILE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), ROOT_DELTA);
+const ROOT_WEB_PATH = new URL(ROOT_DELTA, import.meta.url).pathname.replace(/\/$/, '');
 
-const RELATIVE_ROOT = '../../../../../../';
-const BASE = new URL(RELATIVE_ROOT, import.meta.url).pathname.replace(/\/$/, '');
-
-const corePath = resolve(__dirname, RELATIVE_ROOT, `packages/core/src/core.ts`);
-const extensionsPath = resolve(__dirname, RELATIVE_ROOT, `packages/extensions/src/extensions.ts`);
-const functionsPath = resolve(__dirname, RELATIVE_ROOT, `packages/functions/src/index.ts`);
+const corePath = resolve(ROOT_FILE_PATH, `packages/core/src/core.ts`);
+const extensionsPath = resolve(ROOT_FILE_PATH, `packages/extensions/src/extensions.ts`);
+const functionsPath = resolve(ROOT_FILE_PATH, `packages/functions/src/index.ts`);
 
 const project = new Project({
 	compilerOptions: {
@@ -27,7 +26,7 @@ export const parser = new Parser(project)
 	.addModule({ name: '@gltf-transform/core', slug: 'core', entry: corePath })
 	.addModule({ name: '@gltf-transform/extensions', slug: 'extensions', entry: extensionsPath })
 	.addModule({ name: '@gltf-transform/functions', slug: 'functions', entry: functionsPath })
-	.setRootPath(BASE)
+	.setRootPath(ROOT_WEB_PATH)
 	.setBaseURL('https://github.com/donmccurdy/glTF-Transform/tree/main')
 	.init();
 
