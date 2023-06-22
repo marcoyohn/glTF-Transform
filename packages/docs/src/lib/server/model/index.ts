@@ -1,13 +1,17 @@
-import { resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Encoder, GD, Parser } from '@greendoc/parse';
 import { Project } from 'ts-morph';
 import he from 'he';
 
-const BASE = new URL('../../../../../../', import.meta.url).pathname.replace(/\/$/, '');
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const corePath = resolve(`${BASE}/packages/core/src/core.ts`);
-const extensionsPath = resolve(`${BASE}/packages/extensions/src/extensions.ts`);
-const functionsPath = resolve(`${BASE}/packages/functions/src/index.ts`);
+const RELATIVE_ROOT = '../../../../../../';
+const BASE = new URL(RELATIVE_ROOT, import.meta.url).pathname.replace(/\/$/, '');
+
+const corePath = resolve(__dirname, RELATIVE_ROOT, `packages/core/src/core.ts`);
+const extensionsPath = resolve(__dirname, RELATIVE_ROOT, `packages/extensions/src/extensions.ts`);
+const functionsPath = resolve(__dirname, RELATIVE_ROOT, `packages/functions/src/index.ts`);
 
 const project = new Project({
 	compilerOptions: {
