@@ -1,21 +1,22 @@
+import { resolve } from 'node:path';
 import { Encoder, GD, Parser } from '@greendoc/parse';
 import { Project } from 'ts-morph';
 import he from 'he';
 
 const BASE = new URL('../../../../../../', import.meta.url).pathname.replace(/\/$/, '');
 
-const corePath = `${BASE}/packages/core/src/core.ts`;
-const extensionsPath = `${BASE}/packages/extensions/src/extensions.ts`;
-const functionsPath = `${BASE}/packages/functions/src/index.ts`;
+const corePath = resolve(`${BASE}/packages/core/src/core.ts`);
+const extensionsPath = resolve(`${BASE}/packages/extensions/src/extensions.ts`);
+const functionsPath = resolve(`${BASE}/packages/functions/src/index.ts`);
 
 const project = new Project({
 	compilerOptions: {
 		paths: {
 			'@gltf-transform/core': [corePath],
 			'@gltf-transform/extensions': [extensionsPath],
-			'@gltf-transform/functions': [functionsPath]
-		}
-	}
+			'@gltf-transform/functions': [functionsPath],
+		},
+	},
 });
 
 export const parser = new Parser(project)
@@ -34,7 +35,7 @@ export function getMetadata(item: GD.ApiClass | GD.ApiInterface | GD.ApiEnum | G
 } {
 	return {
 		title: item.name + ' | glTF Transform',
-		snippet: item.comment ? getSnippet(item.comment) : ''
+		snippet: item.comment ? getSnippet(item.comment) : '',
 	};
 }
 
