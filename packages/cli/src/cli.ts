@@ -54,6 +54,7 @@ import {
 	palette,
 	PaletteOptions,
 	PALETTE_DEFAULTS,
+	msftLod
 } from '@gltf-transform/functions';
 import { inspect } from './inspect.js';
 import {
@@ -1530,6 +1531,45 @@ file sizes.
 	.action(({ args, options, logger }) =>
 		Session.create(io, logger, args.input, args.output).transform(sparse(options as unknown as SparseOptions))
 	);
+
+// this creates LODs for all meshes
+program
+	.command('msftlods', 'Create LODs')
+	.help('Creates LODs')
+	.argument('<input>', INPUT_DESC)
+	.argument('<output>', OUTPUT_DESC)
+	.option('--ver <suffix>', 'Version suffix (e.g. 1.2.5 → 1.2.5.2', {
+		default: '',
+	})
+	.option('--draco', 'Use draco instead of meshopt', {
+		default: false,
+	})
+	// .argument('<output>', 'Path to write output')
+	// TODO add custom arguments to feed into madeLods
+	.action(({ args, options, logger }) => {
+		const transforms = [
+			//stripChannelsAndMakeUnlit(options),
+			msftLod(options),
+			//prune()
+		];
+
+		//transforms.push(toktx(ETC1S_DEFAULTS));
+		// if (options.draco)
+		//     transforms.push(draco());
+		// else
+		//     transforms.push(meshopt({encoder: MeshoptEncoder}));
+
+		logger.info('Session.create>>>>>>>>>>>>>>>>>>>>>');
+		Session.create(io, logger, args.input, args.output).transform(...transforms).catch(async (reason) => {
+			logger.info(' cache >>>>>>>>>>>>>>>>>>>>>');
+			logger.info(reason);
+			return reason;
+		}).then(async () => {
+			logger.info('then >>>>>>>>>>>>>>>>>>>>>');
+		}).finally(() => {
+			logger.info('finaly>>>>>>>>>>>>>>>>>>>>>');
+		});
+	});
 
 program.option('--allow-http', 'Allows reads from HTTP requests.', {
 	global: true,

@@ -20,6 +20,7 @@ import { KHRMeshQuantization } from './khr-mesh-quantization/index.js';
 import { KHRTextureBasisu } from './khr-texture-basisu/index.js';
 import { KHRTextureTransform } from './khr-texture-transform/index.js';
 import { KHRXMP } from './khr-xmp-json-ld/index.js';
+import { LODExtension } from './msft-lod/index.js';
 
 export const KHRONOS_EXTENSIONS = [
 	KHRDracoMeshCompression,
@@ -43,6 +44,7 @@ export const KHRONOS_EXTENSIONS = [
 ];
 
 export const ALL_EXTENSIONS = [
+	LODExtension,
 	EXTMeshGPUInstancing,
 	EXTMeshoptCompression,
 	EXTTextureAVIF,
@@ -72,3 +74,4 @@ export * from './khr-mesh-quantization/index.js';
 export * from './khr-texture-basisu/index.js';
 export * from './khr-texture-transform/index.js';
 export * from './khr-xmp-json-ld/index.js';
+export * from './msft-lod/index.js';

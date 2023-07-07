@@ -23,6 +23,8 @@
     "strictBindCallApply": true,
     "noImplicitThis": true,
 
+    "sourceMap": true,
+
     // Certain rules (noImplicitAny, strictNullChecks, strictPropertyInitialization)
     // are tightend by sub-package tsconfig. Global tsconfig affects unit tests, and
     // I consider those rules too strict for unit tests.

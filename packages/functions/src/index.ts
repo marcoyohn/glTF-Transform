@@ -39,3 +39,4 @@ export { getGLPrimitiveCount, isTransformPending, createTransform } from './util
 export * from './unweld.js';
 export * from './vertex-color-space.js';
 export * from './weld.js';
+export * from './msft-lod.js';

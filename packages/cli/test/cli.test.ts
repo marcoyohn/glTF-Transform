@@ -4,7 +4,7 @@ import test from 'ava';
 import tmp from 'tmp';
 import { Document, FileUtils, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { program, programReady } from '@gltf-transform/cli';
+import { program, programReady } from '../src/cli.js';
 import draco3d from 'draco3dgltf';
 import { MeshoptDecoder } from 'meshoptimizer';
 import { fileURLToPath } from 'url';
@@ -35,9 +35,7 @@ test('copy', async (t) => {
 test('meshopt', async (t) => {
 	await programReady;
 	await MeshoptDecoder.ready;
-	const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
-		'meshopt.decoder': MeshoptDecoder,
-	});
+	const io = new NodeIO();
 	const input = path.join(__dirname, 'in', 'chr_knight.glb');
 	const output = tmp.tmpNameSync({ postfix: '.glb' });
 
@@ -147,6 +145,27 @@ test('merge', async (t) => {
 	const texName = root.listTextures()[0].getName();
 	t.deepEqual(sceneNames, ['SceneA', FileUtils.basename(inputB)], 'merge scenes');
 	t.is(texName, FileUtils.basename(inputC), 'merge textures');
+});
+
+function sleep (time) {
+	return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+test('msftlods', async (t) => {
+	t.timeout(3000000);
+	await programReady;
+	const io = new NodeIO();
+	const input = path.join(__dirname, 'in', 'porsche_carrera_gt_concept_2000_replica.glb');
+	const output = path.join(__dirname, 'in', 'porsche_carrera_gt_concept_2000_replica_lod.glb');
+	//const output = tmp.tmpNameSync({ postfix: '.glb' });
+
+	return program.exec(['msftlods', input, output], { silent: true }).catch(async (reason) => {
+		console.error(reason);
+	}).then(async () => {
+		await sleep(10000);
+		const doc2 = await io.read(output);
+		t.truthy(doc2, 'msftlods succeeds');
+	});
 });
 
 async function runSilent(fn: () => Promise<unknown>): Promise<void> {

@@ -23,3 +23,5 @@ docs/dist/**
 
 # coverage
 coverage
+
+.DS_Store
