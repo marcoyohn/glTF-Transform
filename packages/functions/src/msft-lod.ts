@@ -5,6 +5,7 @@ import { createTransform } from "./utils.js";
 import { weld } from './weld.js';
 import { simplifyPrimitive } from './simplify.js';
 import { textureResize } from './texture-resize.js';
+import { dedup } from './dedup.js';
 
 const NAME = 'msft-lod';
 
@@ -55,12 +56,12 @@ export function msftLod(_options: MsfLodOptions): Transform {
         for (const mesh of document.getRoot().listMeshes()) {
 
             // log vertex count of mesh
-            let vertexCount = 0;
-            for (const prim of mesh.listPrimitives()) {
-                vertexCount += prim.getAttribute('POSITION')!.getArray()!.length;
-            }
+            // let vertexCount = 0;
+            // for (const prim of mesh.listPrimitives()) {
+            //     vertexCount += prim.getAttribute('POSITION')!.getArray()!.length;
+            // }
             // console.log(`Mesh ${mesh.getName()} has ${vertexCount} vertices.`);
-            if (vertexCount < 1000) continue;
+            // if (vertexCount < 1000) continue;
 
             // Generate LOD Primitives.
             const lodMeshes: Mesh[] = [];
@@ -137,6 +138,8 @@ export function msftLod(_options: MsfLodOptions): Transform {
                 pattern: new RegExp(`_LOD${i + 1}$`)
             }));
         }
+
+        await document.transform(dedup());
     });
 
 }
