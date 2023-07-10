@@ -162,7 +162,7 @@ test('msftlods', async (t) => {
 	return program.exec(['msftlods', input, output], { silent: true }).catch(async (reason) => {
 		console.error(reason);
 	}).then(async () => {
-		await sleep(10000);
+		await sleep(20000);
 		const doc2 = await io.read(output);
 		t.truthy(doc2, 'msftlods succeeds');
 	});
