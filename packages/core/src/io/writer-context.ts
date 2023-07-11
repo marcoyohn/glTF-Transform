@@ -74,6 +74,12 @@ export class WriterContext {
 	public readonly accessorUsageGroupedByParent = new Set<string>(['ARRAY_BUFFER']);
 	public readonly accessorParents = new Map<Property, Set<Accessor>>();
 
+	// modify for lods
+	public readonly accessorLodsMap = new Map<Accessor, number>();
+	public readonly textureLodsMap = new Map<Texture, number>();
+	public lodsMaxLevel: number; // begin with level 0
+	public readonly imageIndexTetureMap = new Map<GLTF.IImage, Texture>();
+
 	constructor(
 		private readonly _doc: Document,
 		public readonly jsonDoc: JSONDocument,
@@ -88,6 +94,8 @@ export class WriterContext {
 			(texture) => getSlot(_doc, texture) || options.basename || 'texture'
 		);
 		this.logger = _doc.getLogger();
+		// modify for lods
+		this.lodsMaxLevel = 0;
 	}
 
 	/**

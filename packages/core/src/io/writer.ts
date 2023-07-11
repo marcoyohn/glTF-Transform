@@ -393,6 +393,8 @@ export class GLTFWriter {
 			}
 
 			context.imageIndexMap.set(texture, textureIndex);
+			// modify for lods
+			context.imageIndexTetureMap.set(imageDef, texture);
 			return imageDef;
 		});
 
@@ -459,78 +461,97 @@ export class GLTFWriter {
 			const bufferIndex = json.buffers!.length;
 			let bufferByteLength = 0;
 
+			// modify for lods
 			const usageGroups = context.listAccessorUsageGroups();
+			for (let lodsLevel = context.lodsMaxLevel; lodsLevel >= 0; lodsLevel--) {	
+				for (const usage in usageGroups) {
+					if (groupByParent.has(usage)) {
+						// Accessors grouped by (first) parent, including vertex and instance attributes.
+						for (const parentAccessors of Array.from(accessorParents.values())) {
+							const accessors = Array.from(parentAccessors)
+								.filter((a) => bufferAccessorsSet.has(a))
+								.filter((a) => context.getAccessorUsage(a) === usage)
+								// modify for lods
+								.filter((a) => (
+									context.accessorLodsMap.get(a) == null && lodsLevel === context.lodsMaxLevel)
+									|| context.accessorLodsMap.get(a) === lodsLevel
+									);
+							if (!accessors.length) continue;
 
-			for (const usage in usageGroups) {
-				if (groupByParent.has(usage)) {
-					// Accessors grouped by (first) parent, including vertex and instance attributes.
-					for (const parentAccessors of Array.from(accessorParents.values())) {
-						const accessors = Array.from(parentAccessors)
-							.filter((a) => bufferAccessorsSet.has(a))
-							.filter((a) => context.getAccessorUsage(a) === usage);
-						if (!accessors.length) continue;
+							if (
+								usage !== BufferViewUsage.ARRAY_BUFFER ||
+								options.vertexLayout === VertexLayout.INTERLEAVED
+							) {
+								// Case 1: Non-vertex data OR interleaved vertex data.
 
-						if (
-							usage !== BufferViewUsage.ARRAY_BUFFER ||
-							options.vertexLayout === VertexLayout.INTERLEAVED
-						) {
-							// Case 1: Non-vertex data OR interleaved vertex data.
-
-							// Instanced data is not interleaved, see:
-							// https://github.com/KhronosGroup/glTF/pull/1888
-							const result =
-								usage === BufferViewUsage.ARRAY_BUFFER
-									? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
-									: concatAccessors(accessors, bufferIndex, bufferByteLength);
-							bufferByteLength += result.byteLength;
-							buffers.push(...result.buffers);
-						} else {
-							// Case 2: Non-interleaved vertex data.
-
-							for (const accessor of accessors) {
-								// We 'interleave' a single accessor because the method pads to
-								// 4-byte boundaries, which concatAccessors() does not.
-								const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
+								// Instanced data is not interleaved, see:
+								// https://github.com/KhronosGroup/glTF/pull/1888
+								const result =
+									usage === BufferViewUsage.ARRAY_BUFFER
+										? interleaveAccessors(accessors, bufferIndex, bufferByteLength)
+										: concatAccessors(accessors, bufferIndex, bufferByteLength);
 								bufferByteLength += result.byteLength;
 								buffers.push(...result.buffers);
+							} else {
+								// Case 2: Non-interleaved vertex data.
+
+								for (const accessor of accessors) {
+									// We 'interleave' a single accessor because the method pads to
+									// 4-byte boundaries, which concatAccessors() does not.
+									const result = interleaveAccessors([accessor], bufferIndex, bufferByteLength);
+									bufferByteLength += result.byteLength;
+									buffers.push(...result.buffers);
+								}
 							}
 						}
-					}
-				} else {
-					// Accessors concatenated end-to-end, including indices, IBMs, and other data.
-					const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a));
-					if (!accessors.length) continue;
+					} else {
+						// Accessors concatenated end-to-end, including indices, IBMs, and other data.
+						const accessors = usageGroups[usage].filter((a) => bufferAccessorsSet.has(a))
+						// modify for lods
+						.filter((a) => (context.accessorLodsMap.get(a) == null && lodsLevel === context.lodsMaxLevel) 
+										|| context.accessorLodsMap.get(a) === lodsLevel);
+						if (!accessors.length) continue;
 
-					const target =
-						usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
-							? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
-							: undefined;
-					const result =
-						usage === BufferViewUsage.SPARSE
-							? concatSparseAccessors(accessors, bufferIndex, bufferByteLength)
-							: concatAccessors(accessors, bufferIndex, bufferByteLength, target);
-					bufferByteLength += result.byteLength;
-					buffers.push(...result.buffers);
+						const target =
+							usage === BufferViewUsage.ELEMENT_ARRAY_BUFFER
+								? WriterContext.BufferViewTarget.ELEMENT_ARRAY_BUFFER
+								: undefined;
+						const result =
+							usage === BufferViewUsage.SPARSE
+								? concatSparseAccessors(accessors, bufferIndex, bufferByteLength)
+								: concatAccessors(accessors, bufferIndex, bufferByteLength, target);
+						bufferByteLength += result.byteLength;
+						buffers.push(...result.buffers);
+					}
+				}
+
+				// We only support embedded images in GLB, where the embedded buffer must be the first.
+				// Additional buffers are currently left empty (see EXT_meshopt_compression fallback).
+				if (context.imageBufferViews.length && index === 0) {
+					for (let i = 0; i < context.imageBufferViews.length; i++) {
+						// modify for lods
+						const itemTeture = context.imageIndexTetureMap.get(json.images![i]);
+						if (!(
+							(context.textureLodsMap.get(itemTeture!) == null && lodsLevel === context.lodsMaxLevel) 
+							|| context.textureLodsMap.get(itemTeture!) === lodsLevel
+								)) {
+							continue;
+						}
+						json.bufferViews![json.images![i].bufferView!].byteOffset = bufferByteLength;
+						bufferByteLength += context.imageBufferViews[i].byteLength;
+						buffers.push(context.imageBufferViews[i]);
+
+						if (bufferByteLength % 8) {
+							// See: https://github.com/KhronosGroup/glTF/issues/1935
+							const imagePadding = 8 - (bufferByteLength % 8);
+							bufferByteLength += imagePadding;
+							buffers.push(new Uint8Array(imagePadding));
+						}
+					}
 				}
 			}
 
-			// We only support embedded images in GLB, where the embedded buffer must be the first.
-			// Additional buffers are currently left empty (see EXT_meshopt_compression fallback).
-			if (context.imageBufferViews.length && index === 0) {
-				for (let i = 0; i < context.imageBufferViews.length; i++) {
-					json.bufferViews![json.images![i].bufferView!].byteOffset = bufferByteLength;
-					bufferByteLength += context.imageBufferViews[i].byteLength;
-					buffers.push(context.imageBufferViews[i]);
-
-					if (bufferByteLength % 8) {
-						// See: https://github.com/KhronosGroup/glTF/issues/1935
-						const imagePadding = 8 - (bufferByteLength % 8);
-						bufferByteLength += imagePadding;
-						buffers.push(new Uint8Array(imagePadding));
-					}
-				}
-			}
-
+			// modify for lods: otherBufferViews not support lods
 			if (context.otherBufferViews.has(buffer)) {
 				for (const data of context.otherBufferViews.get(buffer)!) {
 					json.bufferViews!.push({
