@@ -155,15 +155,15 @@ test('msftlods', async (t) => {
 	t.timeout(3000000);
 	await programReady;
 	const io = new NodeIO();
-	const input = path.join(__dirname, 'in', 'fivefactory.glb');
-	const output = path.join(__dirname, 'in', 'fivefactory_lod.glb');
+	const input = path.join(__dirname, 'in', 'aircraft_4096.glb');
+	const output = path.join(__dirname, 'in', 'aircraft_4096_lod.glb');
 	//const output = tmp.tmpNameSync({ postfix: '.glb' });
 
 	return program.exec(['msftlods', input, output], {
-		ratio: '0.5,0.1',
-		error: '0.01,0.05',
-		coverage: '0.7,0.3,0.0',
-		texture: '1024x1024,128x128',
+		ratio: '0.8,0.6,0.4,0.2,0.1',
+		error: '0.01,0.05,0.08,0.10,0.30',
+		coverage: '0.8,0.6,0.4,0.2,0.1,0.0',
+		texture: '1920x1080,1024x768,512x512,128x128,64x64',
 	}).catch(async (reason) => {
 		console.error(reason);
 	}).then(async () => {
