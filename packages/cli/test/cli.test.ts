@@ -155,14 +155,19 @@ test('msftlods', async (t) => {
 	t.timeout(3000000);
 	await programReady;
 	const io = new NodeIO();
-	const input = path.join(__dirname, 'in', 'porsche_carrera_gt_concept_2000_replica.glb');
-	const output = path.join(__dirname, 'in', 'porsche_carrera_gt_concept_2000_replica_lod.glb');
+	const input = path.join(__dirname, 'in', 'fivefactory.glb');
+	const output = path.join(__dirname, 'in', 'fivefactory_lod.glb');
 	//const output = tmp.tmpNameSync({ postfix: '.glb' });
 
-	return program.exec(['msftlods', input, output], { silent: true }).catch(async (reason) => {
+	return program.exec(['msftlods', input, output], {
+		ratio: '0.5,0.1',
+		error: '0.01,0.05',
+		coverage: '0.7,0.3,0.0',
+		texture: '1024x1024,128x128',
+	}).catch(async (reason) => {
 		console.error(reason);
 	}).then(async () => {
-		await sleep(20000);
+		await sleep(2000000);
 		const doc2 = await io.read(output);
 		t.truthy(doc2, 'msftlods succeeds');
 	});

@@ -1538,11 +1538,17 @@ program
 	.help('Creates LODs')
 	.argument('<input>', INPUT_DESC)
 	.argument('<output>', OUTPUT_DESC)
-	.option('--ver <suffix>', 'Version suffix (e.g. 1.2.5 → 1.2.5.2', {
-		default: '',
+	.option('--ratio <ratio>', 'ratio of lods', {
+		validator: program.STRING,
 	})
-	.option('--draco', 'Use draco instead of meshopt', {
-		default: false,
+	.option('--error <error>', 'error of lods', {
+		validator: program.STRING,
+	})
+	.option('--coverage <coverage>', 'coverage of lods', {
+		validator: program.STRING,
+	})
+	.option('--texture <texture>', 'texture of lods', {
+		validator: program.STRING,
 	})
 	// .argument('<output>', 'Path to write output')
 	// TODO add custom arguments to feed into madeLods
