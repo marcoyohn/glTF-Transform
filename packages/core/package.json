@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/core",
-	"version": "3.4.5-she",
+	"version": "3.4.5-she.20230712",
 	"publishConfig": {
 		"access": "public",
 		"registry": "https://artifactory.gz.cvte.cn/artifactory/api/npm/cvte-npm-registry"

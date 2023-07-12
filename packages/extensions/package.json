@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/extensions",
-	"version": "3.4.5-she",
+	"version": "3.4.5-she.20230712",
 	"publishConfig": {
 		"access": "public",
 		"registry": "https://artifactory.gz.cvte.cn/artifactory/api/npm/cvte-npm-registry"
@@ -39,7 +39,7 @@
 		"threejs"
 	],
 	"dependencies": {
-		"@gltf-transform/core": "3.4.5-she",
+		"@gltf-transform/core": "3.4.5-she.20230712",
 		"ktx-parse": "^0.5.0"
 	},
 	"files": [

@@ -1,6 +1,6 @@
 {
 	"name": "@gltf-transform/cli",
-	"version": "3.4.5-she",
+	"version": "3.4.5-she.20230712",
 	"publishConfig": {
 		"access": "public",
 		"registry": "https://artifactory.gz.cvte.cn/artifactory/api/npm/cvte-npm-registry"
@@ -30,9 +30,9 @@
 	},
 	"dependencies": {
 		"@caporal/core": "^2.0.2",
-		"@gltf-transform/core": "3.4.5-she",
-		"@gltf-transform/extensions": "3.4.5-she",
-		"@gltf-transform/functions": "3.4.5-she",
+		"@gltf-transform/core": "3.4.5-she.20230712",
+		"@gltf-transform/extensions": "3.4.5-she.20230712",
+		"@gltf-transform/functions": "3.4.5-she.20230712",
 		"@types/inquirer": "^9.0.3",
 		"@types/language-tags": "^1.0.1",
 		"@types/micromatch": "^4.0.2",
