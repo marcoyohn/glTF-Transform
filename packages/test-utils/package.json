@@ -16,8 +16,8 @@
 		"watch": "microbundle watch --format modern --no-compress"
 	},
 	"dependencies": {
-		"@gltf-transform/core": "^3.4.5",
-		"@gltf-transform/extensions": "^3.4.5",
-		"@gltf-transform/functions": "^3.4.5"
+		"@gltf-transform/core": "3.4.5-she",
+		"@gltf-transform/extensions": "3.4.5-she",
+		"@gltf-transform/functions": "3.4.5-she"
 	}
 }
