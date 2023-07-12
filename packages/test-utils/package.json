@@ -1,7 +1,11 @@
 {
 	"private": true,
 	"name": "@gltf-transform/test-utils",
-	"version": "3.4.5",
+	"version": "3.4.5-she",
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://artifactory.gz.cvte.cn/artifactory/api/npm/cvte-npm-registry"
+	  },
 	"type": "module",
 	"sideEffects": false,
 	"exports": "./dist/test-utils.modern.js",

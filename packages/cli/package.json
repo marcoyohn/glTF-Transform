@@ -1,6 +1,10 @@
 {
 	"name": "@gltf-transform/cli",
-	"version": "3.4.5",
+	"version": "3.4.5-she",
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://artifactory.gz.cvte.cn/artifactory/api/npm/cvte-npm-registry"
+	  },
 	"repository": "github:donmccurdy/glTF-Transform",
 	"homepage": "https://gltf-transform.dev/cli.html",
 	"description": "CLI interface to glTF Transform",
