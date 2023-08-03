@@ -49,9 +49,9 @@ export function msftLod(_options: MsfLodOptions): Transform {
         };
 
         // strip all animations
-        for (const animation of document.getRoot().listAnimations()) {
-            animation.dispose();
-        }
+        // for (const animation of document.getRoot().listAnimations()) {
+        //     animation.dispose();
+        // }
 
         for (const mesh of document.getRoot().listMeshes()) {
 
